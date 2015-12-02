@@ -3,7 +3,6 @@ from math import floor
 
 base_36_digits = []
 base_36_digits.extend([str(i) for i in range(10)])
-#base_36_digits.extend(map(chr, range(97, 123)))
 base_36_digits.extend(map(chr, range(65, 91)))
 
 def get_md5(string):
@@ -19,7 +18,11 @@ def get_checksum(string):
                  "S":"28", "T":"29", "U":"30", "V":"31", "W":"32", "X":"33", "Y":"34", "Z":"35"
                  }[c] for c in string)
                )
-	return str(98 - ((data * 100) % 97) % 97)
+	checksum = 98 - ((data * 100) % 97) % 97
+	if checksum > 9:
+		return str(checksum)
+	else:
+		return '0' + str(checksum)
 
 def print_in_base_36(number):
 	digit = base_36_digits[(number % 36)]
@@ -35,7 +38,7 @@ def get_unique_hash(string):
 	return "".join(list(base_36_str)[:12])
 
 def normalize_entity_string(vendor_name, address, zipcode):
-	zipcode = ''.join([d for d in zipcode if d.isdigit()][:5])
+	zipcode = ''.join([d for d in zipcode if d.isdigit() or d.isalpha()])
 
 	normalized_vendor_name = vendor_name.lower() \
 								.replace('incorporated', 'inc') \
@@ -48,15 +51,17 @@ def normalize_entity_string(vendor_name, address, zipcode):
 							.replace('drive', 'dr') \
 							.replace('road', 'rd') \
 							.replace('rd.', 'rd') \
+							.replace('avenue', 'ave') \
+							.replace('ave.', 'ave') \
 							.replace(',', ' ')
 
-	normalized_entity_string = normalized_vendor_name + normalized_address + zipcode
+	#normalized_entity_string = normalized_vendor_name + normalized_address + zipcode
+	normalized_entity_string = normalized_vendor_name + zipcode
 	normalized_entity_string = ''.join(normalized_entity_string.split())
 	return normalized_entity_string
 
 def get_proto_lei(vendor_name, address, zipcode):
 	normalized_entity_string = normalize_entity_string(vendor_name, address, zipcode)
-	print "Input data normal form: %s" % normalized_entity_string
 	prehash = '000018' + get_unique_hash(normalized_entity_string) 
 	checksum = get_checksum(prehash)
 	proto_lei = prehash + checksum
