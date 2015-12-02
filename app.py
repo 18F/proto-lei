@@ -39,6 +39,9 @@ class ProtoLEI(object):
             if preLEI not in self.preLEIs:
                 self.preLEIs[protoLEI] = preLEI
 
+            if preLEI not in self.protoLEIs:
+                self.protoLEIs[preLEI] = protoLEI
+
             name = row[0]
             address = row[1]
             postal_code = row[2]
@@ -53,27 +56,27 @@ class ProtoLEI(object):
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
-    def get_id(self, entity_name=None, entity_zip=None, duns=None):
-        if duns is not None:
-            if duns in self.protoLEIs:
-                return {"protoLEI": self.protoLEIs[duns]}
+    def get_id(self, entity_name=None, entity_zip=None, duns=None, protoLEI=None, preLEI=None):        
+        if protoLEI is None:
+            lookup_id = preLEI if preLEI is not None else duns    
+            if lookup_id in self.protoLEIs:
+                protoLEI = self.protoLEIs[lookup_id]
             else:
-                return {"success": False}
+                if entity_name is not None and entity_zip is not None:
+                    protoLEI = get_proto_lei(entity_name, "", entity_zip)
+                else:
+                    return {"success1": False}
 
-        if entity_name is not None and entity_zip is not None:
-            result = {"success": True}
-            protoLEI = get_proto_lei(entity_name, "", entity_zip)
-            result["protoLEI"] = protoLEI
+        result = {}
+        result["protoLEI"] = protoLEI
 
-            if protoLEI in self.preLEIs:
-                result["preLEI"] = self.preLEIs[protoLEI]
+        if protoLEI in self.preLEIs:
+            result["preLEI"] = self.preLEIs[protoLEI]
 
-            if protoLEI in self.DUNSs:
-                result["DUNS"] = self.DUNSs[protoLEI]
-            
-            return result
-        else:
-            return {"success": False}
+        if protoLEI in self.DUNSs:
+            result["DUNS"] = self.DUNSs[protoLEI]
+        
+        return result
     
     @cherrypy.expose
     @cherrypy.tools.json_out()
