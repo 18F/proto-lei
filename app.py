@@ -1,5 +1,5 @@
 import cherrypy
-from GenerateProtoLEI import get_proto_lei
+from processing.GenerateProtoLEI import get_proto_lei
 import json
 import csv
 
@@ -26,7 +26,7 @@ class ProtoLEI(object):
             name = row[0]
             address = row[1]
             postal_code = row[2]
-            self.info[protoLEI] = {"name": name, "address": address, \
+            self.info[protoLEI] = {"protoLEI": protoLEI, "name": name, "address": address, \
                 "postal-code": postal_code}
 
         reader = csv.reader(open('results/protoLEI_preLEI_mapping.csv'))
@@ -45,18 +45,12 @@ class ProtoLEI(object):
             name = row[0]
             address = row[1]
             postal_code = row[2]
-            self.info[protoLEI] = {"name": name, "address": address, \
+            self.info[protoLEI] = {"protoLEI": protoLEI, "name": name, "address": address, \
                 "postal-code": postal_code}
 
         print "%d entities found." % len(self.info)
 
-    @cherrypy.expose
-    def index(self):
-        return "I'm Alive! Hit get_id to generate Ids."
-
-    @cherrypy.expose
-    @cherrypy.tools.json_out()
-    def get_id(self, entity_name=None, entity_zip=None, duns=None, protoLEI=None, preLEI=None):        
+    def lookup_proto_lei(self, entity_name=None, entity_zip=None, duns=None, protoLEI=None, preLEI=None):
         if protoLEI is None:
             lookup_id = preLEI if preLEI is not None else duns    
             if lookup_id in self.protoLEIs:
@@ -65,7 +59,20 @@ class ProtoLEI(object):
                 if entity_name is not None and entity_zip is not None:
                     protoLEI = get_proto_lei(entity_name, "", entity_zip)
                 else:
-                    return {"success1": False}
+                    protoLEI = None
+        return protoLEI
+
+    @cherrypy.expose
+    def index(self):
+        return "I'm Alive! Hit get_id to generate Ids."
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def get_id(self, entity_name=None, entity_zip=None, duns=None, protoLEI=None, preLEI=None):        
+        protoLEI = self.lookup_proto_lei(entity_name, entity_zip, duns, protoLEI, preLEI)
+
+        if protoLEI is None:
+            return {"success": False}
 
         result = {}
         result["protoLEI"] = protoLEI
@@ -80,7 +87,12 @@ class ProtoLEI(object):
     
     @cherrypy.expose
     @cherrypy.tools.json_out()
-    def get_info(self, protoLEI):
+    def get_info(self, entity_name=None, entity_zip=None, duns=None, protoLEI=None, preLEI=None):
+        protoLEI = self.lookup_proto_lei(entity_name, entity_zip, duns, protoLEI, preLEI)
+
+        if protoLEI is None:
+            return {"success": False}
+            
         if protoLEI in self.info:
             return self.info[protoLEI]
         else:

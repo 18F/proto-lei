@@ -1,7 +1,7 @@
 import csv
 from GenerateProtoLEI import get_proto_lei
 
-reader = csv.reader(open('data/FY15_vendors.csv', 'rb'))
+reader = csv.reader(open('../data/FY15_vendors.csv', 'rb'))
 
 similar_entities = {}
 vendors = {}
@@ -27,7 +27,7 @@ for row in reader:
 
 	i += 1
 
-writer = csv.writer(open('results/protoLEI_DUNS_mapping.csv', 'wb'))
+writer = csv.writer(open('../results/protoLEI_DUNS_mapping.csv', 'wb'))
 writer.writerow(('Vendor Name', 'Address', 'Zip Code', 'DUNS Number', 'ProtoLEI'))
 
 for key in vendors:
@@ -56,13 +56,13 @@ protoLEI_duplicates.sort(key=lambda tup: tup[3])
 duns_duplicates.sort(key=lambda tup: tup[4])
 
 
-writer = csv.writer(open('results/different_protoLEI_same_duns.csv', 'wb'))
+writer = csv.writer(open('../results/different_protoLEI_same_duns.csv', 'wb'))
 writer.writerow(('Vendor Name', 'Address', 'Zip Code', 'DUNS Number', 'ProtoLEI'))
 
 for row in protoLEI_duplicates:
 	writer.writerow(row)
 
-writer = csv.writer(open('results/different_duns_same_lei.csv', 'wb'))
+writer = csv.writer(open('../results/different_duns_same_lei.csv', 'wb'))
 writer.writerow(('Vendor Name', 'Address', 'Zip Code', 'DUNS Number', 'ProtoLEI'))
 
 for row in duns_duplicates:

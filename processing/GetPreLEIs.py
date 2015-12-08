@@ -1,7 +1,7 @@
 import csv
 from GenerateProtoLEI import get_proto_lei
 
-reader = csv.reader(open('data/pleiFull_20151126.csv', 'rb'))
+reader = csv.reader(open('../data/pleiFull_20151126.csv', 'rb'))
 
 similar_entities = {}
 vendors = {}
@@ -36,7 +36,7 @@ for row in reader:
 
 	i += 1
 
-writer = csv.writer(open('results/protoLEI_preLEI_mapping.csv', 'wb'))
+writer = csv.writer(open('../results/protoLEI_preLEI_mapping.csv', 'wb'))
 writer.writerow(('Vendor Name', 'Address', 'Zip Code', 'PreLEI', 'ProtoLEI'))
 
 for key in vendors:
