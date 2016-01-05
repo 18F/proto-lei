@@ -17,10 +17,10 @@ for row in reader:
 		vendor_name = row[header.index('vendorname')]
 		address = row[header.index('streetaddress')]
 		zipcode = row[header.index('zipcode')]
-		
+
 		duns = row[header.index('dunsnumber')]
 		protoLEI = get_proto_lei(vendor_name, address, zipcode)
-		
+
 		key = (protoLEI, duns)
 		if key not in vendors:
 			vendors[key] = (vendor_name, address, zipcode, duns, protoLEI)
@@ -69,5 +69,4 @@ for row in duns_duplicates:
 	writer.writerow(row)
 
 
-print "%d vendors found." % len(vendors)
-
+print ("%d vendors found." % len(vendors))

@@ -7,11 +7,11 @@ base_36_digits.extend(map(chr, range(65, 91)))
 
 def get_md5(string):
 	m = md5()
-	m.update(string)
-	return long(m.hexdigest(), 16)
+	m.update(string.encode('utf-8'))
+	return int(m.hexdigest(), 16)
 
 def get_checksum(string):
-	data = long(
+	data = int(
         "".join({"0":"0", "1":"1", "2":"2", "3":"3", "4":"4", "5":"5", "6":"6", "7":"7", "8":"8", "9":"9",
                  "A":"10", "B":"11", "C":"12", "D":"13", "E":"14", "F":"15", "G":"16", "H":"17", "I":"18",
                  "J":"19", "K":"20", "L":"21", "M":"22", "N":"23", "O":"24", "P":"25", "Q":"26", "R":"27",
@@ -62,11 +62,11 @@ def normalize_entity_string(vendor_name, address, zipcode):
 
 def get_proto_lei(vendor_name, address, zipcode):
 	normalized_entity_string = normalize_entity_string(vendor_name, address, zipcode)
-	prehash = '000018' + get_unique_hash(normalized_entity_string) 
+	prehash = '000018' + get_unique_hash(normalized_entity_string)
 	checksum = get_checksum(prehash)
 	proto_lei = prehash + checksum
 	return proto_lei
 
 if __name__ == '__main__':
 	proto_lei = get_proto_lei("18F Incorporated", "1800 F Street NW", "06510-12312")
-	print "Proto LEI: %s" % proto_lei
+	print ("Proto LEI: %s" % proto_lei)

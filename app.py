@@ -3,9 +3,9 @@ from processing.GenerateProtoLEI import get_proto_lei
 import json
 import csv
 
+
 class ProtoLEI(object):
     def __init__(self):
-
 
         self.info = {}
 
@@ -30,7 +30,7 @@ class ProtoLEI(object):
                 "postal-code": postal_code}
 
         reader = csv.reader(open('results/protoLEI_preLEI_mapping.csv'))
-        
+
         self.preLEIs = {}
         for row in reader:
             protoLEI = row[4]
@@ -48,11 +48,11 @@ class ProtoLEI(object):
             self.info[protoLEI] = {"protoLEI": protoLEI, "name": name, "address": address, \
                 "postal-code": postal_code}
 
-        print "%d entities found." % len(self.info)
+        print ("%d entities found." % len(self.info))
 
     def lookup_proto_lei(self, entity_name=None, entity_zip=None, duns=None, protoLEI=None, preLEI=None):
         if protoLEI is None:
-            lookup_id = preLEI if preLEI is not None else duns    
+            lookup_id = preLEI if preLEI is not None else duns
             if lookup_id in self.protoLEIs:
                 protoLEI = self.protoLEIs[lookup_id]
             else:
@@ -68,7 +68,7 @@ class ProtoLEI(object):
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
-    def get_id(self, entity_name=None, entity_zip=None, duns=None, protoLEI=None, preLEI=None):        
+    def get_id(self, entity_name=None, entity_zip=None, duns=None, protoLEI=None, preLEI=None):
         protoLEI = self.lookup_proto_lei(entity_name, entity_zip, duns, protoLEI, preLEI)
 
         if protoLEI is None:
@@ -82,9 +82,9 @@ class ProtoLEI(object):
 
         if protoLEI in self.DUNSs:
             result["DUNS"] = self.DUNSs[protoLEI]
-        
+
         return result
-    
+
     @cherrypy.expose
     @cherrypy.tools.json_out()
     def get_info(self, entity_name=None, entity_zip=None, duns=None, protoLEI=None, preLEI=None):
@@ -92,7 +92,7 @@ class ProtoLEI(object):
 
         if protoLEI is None:
             return {"success": False}
-            
+
         if protoLEI in self.info:
             return self.info[protoLEI]
         else:

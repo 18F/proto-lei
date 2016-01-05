@@ -26,10 +26,10 @@ for row in reader:
 				break
 
 		zipcode = row[header.index('RegisteredPostalCode')]
-		
+
 		preLEI = row[header.index('LegalEntityIdentifier')]
 		protoLEI = get_proto_lei(vendor_name, address, zipcode)
-		
+
 		key = (protoLEI, preLEI)
 		if key not in vendors:
 			vendors[key] = (vendor_name, address, zipcode, preLEI, protoLEI)
@@ -42,4 +42,4 @@ writer.writerow(('Vendor Name', 'Address', 'Zip Code', 'PreLEI', 'ProtoLEI'))
 for key in vendors:
 	writer.writerow(vendors[key])
 
-print "Found %d entities." % len(vendors)
+print ("Found %d entities." % len(vendors))
